@@ -3,6 +3,8 @@ package com.tornyak.cryptopals.basics;
 public class Hex {
     private static final String HEX_CHARS = "0123456789abcdefABCDEF";
 
+    private Hex(){}
+
     /**
      * Creates a String of HEX characters from a byte array. Every byte will result in two HEX chars
      *
@@ -39,7 +41,7 @@ public class Hex {
         while(remaining > 1) {
             byte byte1 = charToByte(hexChars[i++]);
             byte byte2 = charToByte(hexChars[i++]);
-            hexBytes[resultIdx++] = (byte)((byte1 << 4) | byte2);
+            hexBytes[resultIdx++] = (byte)((byte1 << 4) | byte2 & 0xFF);
             remaining -= 2;
         }
 

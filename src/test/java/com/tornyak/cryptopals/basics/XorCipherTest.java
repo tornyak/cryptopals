@@ -1,5 +1,6 @@
 package com.tornyak.cryptopals.basics;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
@@ -22,15 +23,24 @@ public class XorCipherTest {
     @Test
     void findKeyAndDecrypt() {
         final var ciphertext = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+
+        String plaintextSolution = "";
+        int key = 0;
         double minDistance = Double.MAX_VALUE;
-        for (int i = 0; i < 256; i++) {
-            String hexPlaintext = XorCipher.decrypt(ciphertext, (byte)i);
+
+        for (int k = 0; k < 256; k++) {
+            String hexPlaintext = XorCipher.decrypt(ciphertext, (byte)k);
             String plaintext = new String(Hex.stringToBytes(hexPlaintext));
-            double distance = Statistics.frequencyDistance(plaintext);
-            if(distance <= minDistance) {
-                minDistance = distance;
-                System.out.println(i + ": " + distance + " -> " + plaintext);
+            if(StringUtils.isAsciiPrintable(plaintext)) {
+                double distance = Statistics.frequencyDistance(plaintext);
+                if(distance < minDistance) {
+                    key = k;
+                    minDistance = distance;
+                    plaintextSolution = plaintext;
+                }
             }
         }
+        assertEquals(88, key);
+        assertEquals("Cooking MC's like a pound of bacon", plaintextSolution);
     }
 }

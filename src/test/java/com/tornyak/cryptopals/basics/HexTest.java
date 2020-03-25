@@ -44,11 +44,6 @@ public class HexTest {
     }
 
     @Test
-    void stringFromBytes() {
-
-    }
-
-    @Test
     void stringToBytes() {
         assertEquals("e", new String(Hex.stringToBytes("65")));
     }
@@ -59,9 +54,5 @@ public class HexTest {
         for(char c : hexChars.toCharArray()) {
             assertTrue(Hex.isHex(c), "Failed for: " + c);
         }
-    }
-
-    @Test
-    void byteToChar() {
     }
 }

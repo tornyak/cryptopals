@@ -2,7 +2,9 @@ package com.tornyak.cryptopals.basics;
 
 public class Base64 {
     private static final byte PADDING = '=';
-    private static char[] MAPPINGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+    private static final char[] MAPPINGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+
+    private Base64(){}
 
     public static byte[] encode(byte[] src) {
         byte[] dst = new byte[calculateSize(src.length)];

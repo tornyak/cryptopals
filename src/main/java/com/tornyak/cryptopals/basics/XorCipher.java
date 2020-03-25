@@ -16,10 +16,6 @@ public class XorCipher {
 
     private static String buildKey(byte c, int length) {
         String hexChar = Hex.stringFromBytes(new byte[]{c});
-        String result = "";
-        for (int i = 0; i < length; i++) {
-            result += hexChar;
-        }
-        return result;
+        return hexChar.repeat(Math.max(0, length));
     }
 }
