@@ -1,8 +1,16 @@
 package com.tornyak.cryptopals.basics;
 
+import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.*;
+import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -49,13 +57,24 @@ public class Statistics {
      * @return
      */
     public static double frequencyDistance(String s) {
-        final Map<Character, Double> charFrequencies = charFrequencies(s);
-        return ENGLISH_CHAR_FREQUENCY.entrySet().stream()
-                .map(e -> frequencyDiff(e.getKey(), charFrequencies.getOrDefault(e.getKey(), 0.0)))
+        final Map<Character, Double> charFreq = charFrequencies(s);
+        ENGLISH_CHAR_FREQUENCY.keySet()
+                .stream()
+                .filter(not(charFreq::containsKey))
+                .forEach(k -> charFreq.put(k, 0.0));
+
+        return charFreq.entrySet().stream()
+                .map(e -> frequencyDiff(e.getKey(), e.getValue()))
                 .reduce(0.0, Double::sum);
     }
 
     private static double frequencyDiff(char c, double freq) {
+        if(Character.isSpaceChar(c)) {
+            return 0;
+        }
+        if(!CharUtils.isAsciiPrintable(c)) {
+            return 100 * freq;
+        }
         double englishFreq = ENGLISH_CHAR_FREQUENCY.getOrDefault(c, 0.0);
         return Math.abs(englishFreq - freq);
     }
@@ -79,6 +98,19 @@ public class Statistics {
                 .collect(groupingBy(i -> (char) i.intValue(), counting()));
     }
 
+    public static double sumOfLetterFrequencySquares(String s) {
+        final String alphaString = s.chars()
+                .filter(Character::isAlphabetic)
+                .mapToObj(Character::toString)
+                .collect(joining());
+
+        return charHistogram(alphaString)
+                .values()
+                .stream()
+                .mapToDouble(c -> Math.pow((double)c/s.length(), 2))
+                .sum();
+    }
+
     /**
      * Count number of occurrences of a character in a string. Ignores case.
      *
@@ -91,5 +123,21 @@ public class Statistics {
                 .codePoints()
                 .filter(cp -> (char) cp == Character.toLowerCase(c))
                 .count();
+    }
+
+    public static int hummingDistance(String s1, String s2) {
+        Objects.requireNonNull(s1, s2);
+        if(s1.length() != s2.length()) {
+            throw new IllegalArgumentException("length of s1 and s2 must be equal");
+        }
+
+        final char[] chars1 = s1.toCharArray();
+        final char[] chars2 = s2.toCharArray();
+        int result = 0;
+
+        for (int i = 0; i < chars1.length; i++) {
+            result += Integer.bitCount((chars1[i] ^ chars2[i]) & 0xFFFF);
+        }
+        return result;
     }
 }

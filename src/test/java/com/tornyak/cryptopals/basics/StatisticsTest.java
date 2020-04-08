@@ -1,10 +1,14 @@
 package com.tornyak.cryptopals.basics;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -81,7 +85,21 @@ class StatisticsTest {
     @Test
     void frequencyDistance() {
         String text100chars = "aaaaaaaabccddddeeeeeeeeeeeeeffgghhhhhhiiiiiiikllllmmnnnnnnnooooooopprrrrrrssssssttttttttttuuuvwwwyyz";
-        assertEquals(6.35, Statistics.frequencyDistance(text100chars), 0.00001);
-        assertEquals(22.21841, Statistics.frequencyDistance(TEXT), 0.00001);
+        assertEquals(100.064, Statistics.frequencyDistance(text100chars), 0.00001);
+        assertEquals(100.37163, Statistics.frequencyDistance(TEXT), 0.00001);
+    }
+
+    @ParameterizedTest
+    @MethodSource("hammingDistanceArgs")
+    void hammingDistance(int result, String s1, String s2) {
+        assertEquals(result, Statistics.hummingDistance(s1, s2));
+    }
+
+    private static Stream<Arguments> hammingDistanceArgs() {
+        return Stream.of(
+            Arguments.of(0, "a", "a"),
+            Arguments.of(2, "a", "b"),
+            Arguments.of(37, "this is a test", "wokka wokka!!!")
+        );
     }
 }

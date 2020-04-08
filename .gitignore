@@ -24,6 +24,8 @@ hs_err_pid*
 
 #Intellij project
 *.iml
-/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-/.idea/sonarlint/issuestore/index.pb
-/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+/.idea/sonarlint/
+
+#Maven
+/target/
+

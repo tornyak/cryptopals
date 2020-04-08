@@ -51,6 +51,10 @@ public class Hex {
         return hexBytes;
     }
 
+    public static String toReadableString(String hexString) {
+        return new String(stringToBytes(hexString));
+    }
+
     public static boolean isHex(char c) {
         return HEX_CHARS.indexOf(c) >= 0;
     }
@@ -142,9 +146,10 @@ public class Hex {
             throw new IllegalArgumentException("a and b must be equal size");
         }
 
-        byte[] result = new byte[(a.length() + 1) / 2];
+
         byte[] aBytes = stringToBytes(a);
         byte[] bBytes = stringToBytes(b);
+        byte[] result = new byte[aBytes.length];
         for (int i = 0; i < result.length; i++) {
             result[i] = (byte)(aBytes[i] ^ bBytes[i]);
         }

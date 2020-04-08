@@ -2,34 +2,53 @@ package com.tornyak.cryptopals.basics;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Base64Test {
 
-    @Test
-    public void encode() {
-        assertArrayEquals("".getBytes(), Base64.encode("".getBytes()));
-        assertArrayEquals("4oKs".getBytes(), Base64.encode("€".getBytes()));
-        assertArrayEquals("YQ==".getBytes(), Base64.encode("a".getBytes()));
-        assertArrayEquals("YWI=".getBytes(), Base64.encode("ab".getBytes()));
-        assertArrayEquals("YWJj".getBytes(), Base64.encode("abc".getBytes()));
-        assertArrayEquals("YWJjZA==".getBytes(), Base64.encode("abcd".getBytes()));
-        assertArrayEquals("YWJjZGU=".getBytes(), Base64.encode("abcde".getBytes()));
-        assertArrayEquals("YWJjZGVm".getBytes(), Base64.encode("abcdef".getBytes()));
-        assertArrayEquals("YWJjZGVmZw==".getBytes(), Base64.encode("abcdefg".getBytes()));
+    @ParameterizedTest
+    @MethodSource("encodeArguments")
+    public void encode(String input, String expected) {
+        assertArrayEquals(expected.getBytes(), Base64.encode(input.getBytes()));
     }
 
-    @Test
-    public void calculateSize() {
-        assertEquals(0, Base64.calculateSize(0));
-        assertEquals(4, Base64.calculateSize(1));
-        assertEquals(4, Base64.calculateSize(2));
-        assertEquals(4, Base64.calculateSize(3));
-        assertEquals(8, Base64.calculateSize(4));
-        assertEquals(8, Base64.calculateSize(6));
-        assertEquals(12, Base64.calculateSize(7));
+    static Stream<Arguments> encodeArguments() {
+        return Stream.of(
+                Arguments.of("",""),
+                Arguments.of("€","4oKs"),
+                Arguments.of("a","YQ=="),
+                Arguments.of("ab","YWI="),
+                Arguments.of("abc","YWJj"),
+                Arguments.of("abcd","YWJjZA=="),
+                Arguments.of("abcde","YWJjZGU="),
+                Arguments.of("abcdef","YWJjZGVm"),
+                Arguments.of("abcdefg","YWJjZGVmZw==")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("calculateSizeArguments")
+    public void calculateSize(int input, int expected) {
+        assertEquals(expected, Base64.calculateSize(input));
+    }
+
+    private static Stream<Arguments> calculateSizeArguments() {
+        return Stream.of(
+                Arguments.of(0,0),
+                Arguments.of(1,4),
+                Arguments.of(2,4),
+                Arguments.of(3,4),
+                Arguments.of(4,8),
+                Arguments.of(6,8),
+                Arguments.of(7,12)
+        );
     }
 
     @Test
