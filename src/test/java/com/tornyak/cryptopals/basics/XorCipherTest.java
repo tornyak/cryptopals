@@ -82,8 +82,7 @@ public class XorCipherTest {
     void breakRepeatingKeyXor() throws Exception {
         URI uri = getClass().getClassLoader().getResource("challenge6_data.txt").toURI();
         Path path = Paths.get(uri);
-        final String base64lines = String.join("", Files.readAllLines(path));
-        final byte[] bytes = Base64.getDecoder().decode(base64lines);
+        byte[] bytes = Base64.getMimeDecoder().decode(Files.readAllBytes(path));
 
         TreeMap<Double, Integer> distances = calculateKeyDistances(bytes);
         int keyLength = distances
