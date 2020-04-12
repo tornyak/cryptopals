@@ -28,4 +28,12 @@ public class Bytes {
         }
         return result;
     }
+
+    public static byte[] xor(byte[] a, int i, byte[] b, int j, int size) {
+        byte[] result = new byte[size];
+        for (int k = 0; k < size; k++) {
+            result[k] = (byte) (a[i + k] ^ b[j + k]);
+        }
+        return result;
+    }
 }
