@@ -32,15 +32,29 @@ class AesCbcTest {
         byte[] iv = generateIv(blockSize);
 
         final byte[] plaintext = AesCbc.decrypt(ciphertext, key, iv);
+        assertTrue(new String(plaintext).trim().endsWith("Play that funky music"));
+    }
 
-        System.out.println(new String(plaintext));
+    @Test
+    void encryptDecrypt() throws Exception {
+        int blockSize = 16;
+        byte[] key = "YELLOW SUBMARINE".getBytes();
+        byte[] iv = generateIv(blockSize);
 
+        String plaintext =
+                "Una mattina mi son alzato,\n" +
+                "o bella ciao, bella ciao, bella ciao ciao ciao!\n" +
+                "Una mattina mi son alzato\n" +
+                "e ho trovato l'invasor.";
+
+        byte[] ptBytes = plaintext.getBytes();
+
+        assertArrayEquals(ptBytes, AesCbc.decrypt(AesCbc.encrypt(ptBytes, key, iv), key, iv));
     }
 
     private byte[] generateIv(int size) {
         byte[] iv = new byte[size];
         SecureRandom rng = new SecureRandom();
-        System.out.println(rng.getAlgorithm() + " : " + rng.getProvider());
         rng.nextBytes(iv);
         return iv;
     }

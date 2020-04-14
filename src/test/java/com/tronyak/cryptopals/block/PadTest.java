@@ -26,6 +26,29 @@ class PadTest {
         assertThrows(IllegalArgumentException.class, () -> Pad.pkcs7("data".getBytes(), 256));
     }
 
+    @ParameterizedTest
+    @MethodSource("paddingZerosArguments")
+    void countPaddingZeros(int zeroCnt, byte[] data) {
+        assertEquals(zeroCnt, Pad.countPaddingZeros(data));
+    }
+
+    static Stream<Arguments> paddingZerosArguments() {
+        return Stream.of(
+                Arguments.of(0, new byte[0]),
+                Arguments.of(0, new byte[]{1}),
+                Arguments.of(0, new byte[]{1, 2}),
+                Arguments.of(0, new byte[]{1, 2, 3}),
+                Arguments.of(1, new byte[]{1, 2, 3, 0}),
+                Arguments.of(2, new byte[]{1, 2, 3, 0, 0}),
+                Arguments.of(3, new byte[]{1, 2, 3, 0, 0, 0}),
+                Arguments.of(1, new byte[]{0}),
+                Arguments.of(2, new byte[]{0, 0}),
+                Arguments.of(3, new byte[]{0, 0, 0}),
+                Arguments.of(0, new byte[]{0 ,0, 0, 1}),
+                Arguments.of(1, new byte[]{0 ,0, 0, 1, 0})
+        );
+    }
+
     private byte[] padData(byte[] data, byte[] pad) {
         byte[] result = new byte[data.length + pad.length];
         System.arraycopy(data, 0, result, 0, data.length);

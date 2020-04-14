@@ -16,11 +16,11 @@ public class AesCbc {
             byte[] paddedData = Pad.pkcs7(data, blockSize);
             final byte[] ciphertext = new byte[paddedData.length];
 
-            byte[] input = Bytes.xor(data, 0, iv, 0, blockSize);
+            byte[] input = Bytes.xor(paddedData, 0, iv, 0, blockSize);
             cipher.update(input, 0, blockSize, ciphertext, 0);
 
             for (int i = 1; i < paddedData.length / blockSize; i++) {
-                input = Bytes.xor(data, i, ciphertext, i - 1, blockSize);
+                input = Bytes.xor(paddedData, i, ciphertext, i - 1, blockSize);
                 cipher.update(input, 0, blockSize, ciphertext, i * blockSize);
             }
 
@@ -44,11 +44,11 @@ public class AesCbc {
             for (int i = 1; i < plaintext.length / blockSize; i++) {
                 decryptedBlock = cipher.update(data, i * blockSize, blockSize);
                 xor = Bytes.xor(decryptedBlock, 0, data, (i - 1) * blockSize, blockSize);
-                System.arraycopy(xor, 0, plaintext, (i - 1) * blockSize, blockSize);
+                System.arraycopy(xor, 0, plaintext, i * blockSize, blockSize);
             }
 
             cipher.doFinal();
-            return plaintext;
+            return Pad.removePkcs7(plaintext);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new SecurityException(e);
         }

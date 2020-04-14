@@ -18,4 +18,23 @@ public class Pad {
 
         return result;
     }
+
+    public static byte[] removePkcs7(byte[] data) {
+        int zeroCnt = countPaddingZeros(data);
+        byte padByte = data[data.length - 1 -zeroCnt];
+        return Arrays.copyOf(data, data.length - zeroCnt - padByte);
+    }
+
+    public static byte[] removeZeros(byte[] data) {
+        int zeroCount = countPaddingZeros(data);
+        return Arrays.copyOf(data, data.length - zeroCount);
+    }
+
+    static int countPaddingZeros(byte[] data) {
+        int i = data.length - 1;
+        while (i >= 0 && data[i] == 0) {
+            i--;
+        }
+        return data.length -1 - i;
+    }
 }
