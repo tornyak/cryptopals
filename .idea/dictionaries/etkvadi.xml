@@ -2,6 +2,7 @@
   <dictionary name="etkvadi">
     <words>
       <w>ciphertext</w>
+      <w>cyphertext</w>
     </words>
   </dictionary>
 </component>

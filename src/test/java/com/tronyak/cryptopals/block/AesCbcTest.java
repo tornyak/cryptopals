@@ -58,6 +58,4 @@ class AesCbcTest {
         rng.nextBytes(iv);
         return iv;
     }
-
-
 }
