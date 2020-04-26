@@ -18,11 +18,28 @@ public class AesEcb {
                     "dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg\n" +
                     "YnkK");
 
+    private byte[] prefix = generatePrefix();
+
+    private byte[] generatePrefix() {
+        int cnt = rng.nextInt(32);
+        byte[] result = new byte[cnt];
+        rng.nextBytes(result);
+        return result;
+    }
+
     public byte[] appendAndEncrypt(byte[] data) {
         byte[] appendedData = new byte[data.length + append.length];
         System.arraycopy(data, 0, appendedData, 0, data.length);
         System.arraycopy(append, 0, appendedData, data.length, append.length);
         return encrypt(appendedData, key);
+    }
+
+    public byte[] prependAndEncrypt(byte[] data) {
+        byte[] appendedDataWithPrefix = new byte[data.length + prefix.length + append.length];
+        System.arraycopy(prefix, 0, appendedDataWithPrefix, 0, prefix.length);
+        System.arraycopy(data, 0, appendedDataWithPrefix, prefix.length, data.length);
+        System.arraycopy(append, 0, appendedDataWithPrefix, prefix.length + data.length, append.length);
+        return encrypt(appendedDataWithPrefix, key);
     }
 
 
