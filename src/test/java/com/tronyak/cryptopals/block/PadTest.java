@@ -20,6 +20,19 @@ class PadTest {
         assertArrayEquals(padData(data, pad), Pad.pkcs7(data, blockSize));
     }
 
+    @ParameterizedTest
+    @MethodSource("pkcs7RemovePaddingArguments")
+    @DisplayName("Set 2 challenge 15 - PKCS#7 padding validation")
+    void pkcs7RemovePadding(byte[] dataWithoutPad, byte[] dataWithPad) {
+        assertArrayEquals(dataWithoutPad, Pad.removePkcs7(dataWithPad));
+    }
+
+    @ParameterizedTest
+    @MethodSource("pkcs7IllegalPaddingArguments")
+    void pkcs7IllegalPaddingbyte(byte[] data) {
+        assertThrows(IllegalArgumentException.class, () -> Pad.removePkcs7(data));
+    }
+
     @Test
     void pkcs7IllegalBlockSize() {
         assertThrows(IllegalArgumentException.class, () -> Pad.pkcs7("data".getBytes(), -1));
@@ -46,6 +59,19 @@ class PadTest {
                 Arguments.of(3, new byte[]{0, 0, 0}),
                 Arguments.of(0, new byte[]{0 ,0, 0, 1}),
                 Arguments.of(1, new byte[]{0 ,0, 0, 1, 0})
+        );
+    }
+
+    static Stream<Arguments> pkcs7RemovePaddingArguments() {
+        return Stream.of(
+                Arguments.of("ICE ICE BABY".getBytes(), "ICE ICE BABY\u0004\u0004\u0004\u0004".getBytes())
+        );
+    }
+
+    static Stream<Arguments> pkcs7IllegalPaddingArguments() {
+        return Stream.of(
+                Arguments.of("ICE ICE BABY\u0005\u0005\u0005\u0005".getBytes()),
+                Arguments.of("ICE ICE BABY\u0001\u0002\u0003\u0004".getBytes())
         );
     }
 
