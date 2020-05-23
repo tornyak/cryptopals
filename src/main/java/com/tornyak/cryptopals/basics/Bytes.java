@@ -1,8 +1,11 @@
 package com.tornyak.cryptopals.basics;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 
-public class Bytes {
+public final class Bytes {
+
+    private static final SecureRandom RNG = new SecureRandom();
 
     public static byte[][] splitIntoBlocks(byte[] bytes, int size) {
         int blocks = (bytes.length + size - 1) / size;
@@ -35,5 +38,20 @@ public class Bytes {
             result[k] = (byte) (a[i + k] ^ b[j + k]);
         }
         return result;
+    }
+
+    /**
+     * @param size length of random byte array
+     * @return byte array of random bytes
+     */
+    public static byte[] random(int size) {
+        byte[] result = new byte[size];
+        RNG.nextBytes(result);
+        return result;
+    }
+
+    public static byte flipBit(int i, byte b) {
+        byte mask = (byte)(1 << i);
+        return (byte)(b ^ mask);
     }
 }

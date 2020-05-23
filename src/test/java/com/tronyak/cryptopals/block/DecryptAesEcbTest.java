@@ -55,7 +55,6 @@ public class DecryptAesEcbTest {
         int blockSize = 16;
         int cyphertextSize = cypher.prependAndEncrypt("".getBytes()).length;
         int prefixSize = discoverPrefixSize(cypher, blockSize);
-        int prefixPadSize = blockSize - prefixSize % blockSize;
 
         String base = "A".repeat(cyphertextSize - prefixSize - 1);
         String value = "";

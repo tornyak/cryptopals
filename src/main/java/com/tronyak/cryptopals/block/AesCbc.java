@@ -8,6 +8,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class AesCbc {
+
     public static byte[] encrypt(byte[] data, byte[] key, byte[] iv) {
         try {
             Cipher cipher = initCipher(key, Cipher.ENCRYPT_MODE);
@@ -20,7 +21,7 @@ public class AesCbc {
             cipher.update(input, 0, blockSize, ciphertext, 0);
 
             for (int i = 1; i < paddedData.length / blockSize; i++) {
-                input = Bytes.xor(paddedData, i, ciphertext, i - 1, blockSize);
+                input = Bytes.xor(paddedData, i * blockSize, ciphertext, (i - 1) * blockSize, blockSize);
                 cipher.update(input, 0, blockSize, ciphertext, i * blockSize);
             }
 
