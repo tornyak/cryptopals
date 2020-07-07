@@ -1,7 +1,7 @@
 package com.tronyak.cryptopals.block;
 
+import javax.crypto.BadPaddingException;
 import java.util.Arrays;
-import java.util.IllegalFormatException;
 
 public class Pad {
     public static byte[] pkcs7(byte[] data, int blockSize) {
@@ -20,18 +20,21 @@ public class Pad {
         return result;
     }
 
-    public static byte[] removePkcs7(byte[] data) {
+    public static byte[] removePkcs7(byte[] data) throws BadPaddingException {
         validatePkcs7(data);
         int zeroCnt = countPaddingZeros(data);
         byte padByte = data[data.length - 1 -zeroCnt];
         return Arrays.copyOf(data, data.length - zeroCnt - padByte);
     }
 
-    public static void validatePkcs7(byte[] data) {
+    public static void validatePkcs7(byte[] data) throws BadPaddingException {
         byte padByte = data[data.length - 1];
+        if(padByte <= 0 || padByte > 16) {
+            throw new BadPaddingException("Pad value out of range: " + padByte);
+        }
         for (int i = 1; i < padByte; i++) {
             if(data[data.length - 1 - i] != padByte) {
-                throw new IllegalArgumentException("Bad pad");
+                throw new BadPaddingException("Bad pad");
             }
         }
     }

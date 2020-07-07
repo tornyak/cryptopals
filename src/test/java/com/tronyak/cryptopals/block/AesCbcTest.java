@@ -4,6 +4,7 @@ import com.tornyak.cryptopals.basics.Bytes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -15,9 +16,8 @@ import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -119,7 +119,7 @@ class AesCbcTest {
         String result = plaintext;
         for (int i = 0; i < blackList.length(); i++) {
             char c = blackList.charAt(i);
-            result = plaintext.replaceAll(Character.toString(c), "%" + (int)c);
+            result = plaintext.replaceAll(Character.toString(c), "%" + (int) c);
         }
         return result;
     }
@@ -134,10 +134,71 @@ class AesCbcTest {
     public static Map<String, String> parseKeyValuePairs(String data, String delimiter) {
         Map<String, String> result = new HashMap<>();
         String[] kvPairs = data.split(delimiter);
-        for(String s : kvPairs) {
+        for (String s : kvPairs) {
             String[] kv = s.split("=");
             result.put(kv[0], kv[1]);
         }
         return result;
+    }
+    @Test
+    @DisplayName("Set 3 challenge 17 - The CBC padding oracle")
+    void cbcPaddingOracle() throws BadPaddingException {
+        final CbcPaddingOracle oracle = new CbcPaddingOracle();
+        final byte[] ciphertextWithIv = oracle.getCiphertextWithIv();
+        byte[] plaintext = new byte[ciphertextWithIv.length - blockSize];
+
+        for (int block = 1; block < ciphertextWithIv.length / blockSize; block++) {
+            final byte[] plaintextBlock = decryptBlock(Arrays.copyOfRange(ciphertextWithIv, (block - 1) * blockSize, (block + 1) * blockSize), oracle);
+            System.arraycopy(plaintextBlock, 0, plaintext, (block - 1) * blockSize, blockSize);
+        }
+
+        plaintext = Base64.getDecoder().decode(Pad.removePkcs7(plaintext));
+        System.out.println("Plaintext: " + new String(plaintext));
+    }
+
+    /**
+     * @param c two blocks of ciphertext
+     * @return
+     */
+    private byte[] decryptBlock(byte[] c, CbcPaddingOracle oracle) {
+        List<byte[]> plaintexts = new ArrayList<>(); // possible solutions
+        plaintexts.add(new byte[blockSize]);
+
+        for (int guessingIndex = blockSize - 1; guessingIndex >= 0; guessingIndex--) {
+            List<byte[]> tmpPlaintexts = plaintexts;
+            plaintexts = new ArrayList<>();
+            for(int i = 0; i < tmpPlaintexts.size(); i++) {
+                final byte[] plaintext = tmpPlaintexts.get(i);
+                //System.out.printf("Guessing byte: %d, plaintext: %s%n", guessingIndex, Arrays.toString(plaintext));
+                final List<Byte> guessed = guessByte(c, plaintext.clone(), guessingIndex, oracle);
+                for (Byte b : guessed) {
+                    final byte[] clone = plaintext.clone();
+                    clone[guessingIndex] = b;
+                    plaintexts.add(clone);
+                }
+            }
+        }
+        return plaintexts.get(0);
+    }
+
+    private List<Byte> guessByte(byte[] c, byte[] plaintext, int guessingIndex, CbcPaddingOracle oracle) {
+        List<Byte> guessed = new ArrayList<>();
+        int pad = blockSize - guessingIndex;
+        for (int guessValue = 0; guessValue < 256; guessValue++) {
+
+            final byte[] clone = c.clone();
+            clone[guessingIndex] = (byte)(clone[guessingIndex] ^ guessValue ^ pad);
+
+            for (int i = guessingIndex + 1; i < blockSize ; i++) {
+                clone[i] = (byte)(clone[i] ^ plaintext[i] ^ pad);
+            }
+
+            try {
+                oracle.decrypt(clone);
+                guessed.add((byte)guessValue);
+            } catch (SecurityException e) {}
+        }
+        //System.out.println("Pad: " + pad + " Guessed: " + guessed);
+        return guessed;
     }
 }

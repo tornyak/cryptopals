@@ -85,8 +85,8 @@ class StatisticsTest {
     @Test
     void frequencyDistance() {
         String text100chars = "aaaaaaaabccddddeeeeeeeeeeeeeffgghhhhhhiiiiiiikllllmmnnnnnnnooooooopprrrrrrssssssttttttttttuuuvwwwyyz";
-        assertEquals(100.064, Statistics.frequencyDistance(text100chars), 0.00001);
-        assertEquals(100.37163, Statistics.frequencyDistance(TEXT), 0.00001);
+        assertEquals(6.35, Statistics.frequencyDistance(text100chars), 0.00001);
+        assertEquals(24.628, Statistics.frequencyDistance(TEXT), 0.0001);
     }
 
     @ParameterizedTest

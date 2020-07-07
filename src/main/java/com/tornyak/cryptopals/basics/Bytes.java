@@ -15,10 +15,10 @@ public final class Bytes {
             result[i] = Arrays.copyOfRange(bytes, size * i, size * (i + 1));
             remaining-=size;
         }
-//        if(remaining > 0) {
-//            result[blocks - 1] = new byte[size];
-//            System.arraycopy(bytes, size * (blocks - 1), result[blocks - 1], 0, remaining);
-//        }
+        if(remaining > 0) {
+            result[blocks - 1] = new byte[size];
+            System.arraycopy(bytes, size * (blocks - 1), result[blocks - 1], 0, remaining);
+        }
         return result;
     }
 

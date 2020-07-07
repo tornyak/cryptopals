@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.crypto.BadPaddingException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -23,14 +24,14 @@ class PadTest {
     @ParameterizedTest
     @MethodSource("pkcs7RemovePaddingArguments")
     @DisplayName("Set 2 challenge 15 - PKCS#7 padding validation")
-    void pkcs7RemovePadding(byte[] dataWithoutPad, byte[] dataWithPad) {
+    void pkcs7RemovePadding(byte[] dataWithoutPad, byte[] dataWithPad) throws BadPaddingException {
         assertArrayEquals(dataWithoutPad, Pad.removePkcs7(dataWithPad));
     }
 
     @ParameterizedTest
     @MethodSource("pkcs7IllegalPaddingArguments")
     void pkcs7IllegalPaddingbyte(byte[] data) {
-        assertThrows(IllegalArgumentException.class, () -> Pad.removePkcs7(data));
+        assertThrows(BadPaddingException.class, () -> Pad.removePkcs7(data));
     }
 
     @Test
