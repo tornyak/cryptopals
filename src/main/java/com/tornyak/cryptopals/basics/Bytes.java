@@ -54,4 +54,10 @@ public final class Bytes {
         byte mask = (byte)(1 << i);
         return (byte)(b ^ mask);
     }
+
+    public static byte[] filledWithValue(int size, byte value) {
+        final byte[] result = new byte[size];
+        Arrays.fill(result, value);
+        return result;
+    }
 }
