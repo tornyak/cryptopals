@@ -51,13 +51,20 @@ public final class Bytes {
     }
 
     public static byte flipBit(int i, byte b) {
-        byte mask = (byte)(1 << i);
-        return (byte)(b ^ mask);
+        byte mask = (byte) (1 << i);
+        return (byte) (b ^ mask);
     }
 
     public static byte[] filledWithValue(int size, byte value) {
         final byte[] result = new byte[size];
         Arrays.fill(result, value);
+        return result;
+    }
+
+    public static byte[] append(byte[] bytes, byte b) {
+        final byte[] result = new byte[bytes.length + 1];
+        System.arraycopy(bytes, 0, result, 0, bytes.length);
+        result[bytes.length] = b;
         return result;
     }
 }

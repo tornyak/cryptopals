@@ -1,5 +1,7 @@
 package com.tornyak.cryptopals.basics;
 
+import java.util.Arrays;
+
 public class XorCipher {
 
     private XorCipher() {
@@ -19,12 +21,23 @@ public class XorCipher {
         final byte[] plaintextBytes = new byte[ciphertext.length];
 
         for (int i = 0, j = 0; i < ciphertext.length; i++, j++) {
-            if(j >= keyBytes.length) {
+            if (j >= keyBytes.length) {
                 j = 0;
             }
-            plaintextBytes[i] = (byte)(ciphertext[i] ^ keyBytes[j]);
+            plaintextBytes[i] = (byte) (ciphertext[i] ^ keyBytes[j]);
         }
         return new String(plaintextBytes);
+    }
+
+    public static byte[] decrypt(byte[] ciphertext, byte[] key) {
+        final byte[] plaintextBytes = new byte[ciphertext.length];
+        for (int i = 0, j = 0; i < ciphertext.length; i++, j++) {
+            if (j >= key.length) {
+                j = 0;
+            }
+            plaintextBytes[i] = (byte) (ciphertext[i] ^ key[j]);
+        }
+        return plaintextBytes;
     }
 
     public static String encrypt(String plaintext, String key) {
@@ -33,10 +46,10 @@ public class XorCipher {
         final byte[] ciphertext = new byte[plaintextBytes.length];
 
         for (int i = 0, j = 0; i < ciphertext.length; i++, j++) {
-            if(j >= keyBytes.length) {
+            if (j >= keyBytes.length) {
                 j = 0;
             }
-            ciphertext[i] = (byte)(plaintextBytes[i] ^ keyBytes[j]);
+            ciphertext[i] = (byte) (plaintextBytes[i] ^ keyBytes[j]);
         }
         return Hex.stringFromBytes(ciphertext);
     }
@@ -45,15 +58,10 @@ public class XorCipher {
         return encrypt(ciphertext, key);
     }
 
-    private static String extendKey(byte c, int length) {
-        String hexChar = Hex.stringFromBytes(new byte[]{c});
-        return hexChar.repeat(Math.max(0, length));
-    }
-
-    private static String extendKey(String key, int length) {
-        String hexKey = Hex.stringFromBytes(key.getBytes());
-        String extendedKey =  hexKey.repeat((length/hexKey.length()));
-        int lengthDiff = length - extendedKey.length();
-        return extendedKey + hexKey.substring(0, lengthDiff);
+    public static byte[] decryptTillCommonLength(byte[] ciphertext, byte[] key) {
+        int length = Math.min(ciphertext.length, key.length);
+        byte[] c = (ciphertext.length > length) ? Arrays.copyOf(ciphertext, length) : ciphertext;
+        byte[] k = (key.length > length) ? Arrays.copyOf(key, length) : key;
+        return decrypt(c, k);
     }
 }
