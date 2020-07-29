@@ -67,4 +67,12 @@ public final class Bytes {
         result[bytes.length] = b;
         return result;
     }
+
+    public static byte[] append(byte[] b1, byte[] b2) {
+        final byte[] result = new byte[b1.length + b2.length];
+        System.arraycopy(b1, 0, result, 0, b1.length);
+        System.arraycopy(b2, 0, result, b1.length, b2.length);
+        return result;
+    }
+
 }

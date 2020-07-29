@@ -95,7 +95,7 @@ public class XorCipherTest {
         assertEquals("Terminator X: Bring the noise", key);
     }
 
-    private String findKeyOfSize(int keySize, byte[] bytes) {
+    public static String findKeyOfSize(int keySize, byte[] bytes) {
         byte[][] blocks = Bytes.splitIntoBlocks(bytes, keySize);
         byte[][] transposed = Bytes.transpose(blocks);
         StringBuilder key = new StringBuilder();
@@ -107,7 +107,7 @@ public class XorCipherTest {
         return key.toString();
     }
 
-    private Pair<Byte, Double> findBestKeyFreqSquareSum(String s) {
+    private static Pair<Byte, Double> findBestKeyFreqSquareSum(String s) {
         final double englishFreqSum = 0.065;
         double minDelta = Double.MAX_VALUE;
         int key = 0;
@@ -130,7 +130,7 @@ public class XorCipherTest {
         return Pair.of((byte)key, minDelta);
     }
 
-    private double getLetterPercentage(String plaintext) {
+    private static double getLetterPercentage(String plaintext) {
         IntPredicate isAlphabetic = Character::isAlphabetic;
         IntPredicate isSpace = Character::isWhitespace;
         return (double)plaintext.chars().filter(isAlphabetic.or(isSpace)).count() / plaintext.length();
@@ -160,7 +160,7 @@ public class XorCipherTest {
         return totalDistance / (sampleSize -1);
     }
 
-    private boolean isStringPrintable(String s) {
+    private static boolean isStringPrintable(String s) {
         IntPredicate isWhitespace = Character::isWhitespace;
         IntPredicate isAsciiPrintable = i -> CharUtils.isAsciiPrintable((char)i);
         return s.chars().filter(isAsciiPrintable.or(isWhitespace).negate()).findAny().isEmpty();

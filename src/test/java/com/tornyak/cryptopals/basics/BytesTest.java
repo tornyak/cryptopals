@@ -25,4 +25,11 @@ class BytesTest {
             assertArrayEquals(expected2[i], split2[i]);
         }
     }
+
+    @Test
+    void appendArray() throws Exception {
+        byte[] hello = "Hello".getBytes();
+        byte[] world = "World".getBytes();
+        assertArrayEquals("HelloWorld".getBytes(), Bytes.append(hello, world));
+    }
 }

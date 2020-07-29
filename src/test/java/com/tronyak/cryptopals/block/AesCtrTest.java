@@ -3,6 +3,7 @@ package com.tronyak.cryptopals.block;
 import com.tornyak.cryptopals.basics.Bytes;
 import com.tornyak.cryptopals.basics.NGrams;
 import com.tornyak.cryptopals.basics.XorCipher;
+import com.tornyak.cryptopals.basics.XorCipherTest;
 import org.apache.commons.lang3.CharUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -19,9 +20,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,21 +35,10 @@ class AesCtrTest {
     static void setUp() throws Exception {
         Path[] paths = List.of("ngrams1.txt", "ngrams2.txt", "ngrams3.txt")
                 .stream()
-                .map(ClassLoader::getSystemResource)
-                .filter(Objects::nonNull)
-                .map(AesCtrTest::urlToUri)
-                .map(Path::of)
+                .map(AesCtrTest::getPathFrorResource)
                 .toArray(Path[]::new);
 
         nGrams = NGrams.loadFromFiles(paths);
-    }
-
-    private static URI urlToUri(URL url) {
-        try {
-            return url.toURI();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException();
-        }
     }
 
     @Test
@@ -89,14 +79,14 @@ class AesCtrTest {
     @Test
     @DisplayName("Set 3 challenge 19 - Break fixed-nonce CTR mode using substitutions")
     void breakFixedNonceUsingSubstitutions() throws IOException {
-        File file = new File(getClass().getClassLoader().getResource("challenge19_data.txt").getPath());
-        final List<String> base64Plaintexts = Files.readAllLines(file.toPath());
+        Path path = getPathFrorResource("challenge19_data.txt");
+        final List<String> base64Plaintexts = Files.readAllLines(path);
         byte[] key = Bytes.random(blockSize);
         byte[] iv = new byte[blockSize];
         List<byte[]> ciphertexts = base64Plaintexts.stream()
                 .map(Base64.getDecoder()::decode)
                 .map(p -> AesCtr.encrypt(p, key, iv))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         int longestLength = ciphertexts.stream().mapToInt(a -> a.length).max().getAsInt();
 
@@ -199,10 +189,41 @@ class AesCtrTest {
         return fitness + (10000 * nGrams.getFrequency(s));
     }
 
-    //@Test
-    //@Disabled
-    //@DisplayName("Set 3 challenge 20 - Break fixed-nonce CTR statistically")
-    void breakFixedNonceStatistically() throws IOException {
+    @Test
+    @DisplayName("Set 3 challenge 20 - Break fixed-nonce CTR statistically")
+    void breakFixedNonceStatistically() throws Exception {
+        Path path = getPathFrorResource("challenge20_data.txt");
+
+        List<byte[]> ciphertexts = Files.readAllLines(path)
+                .stream()
+                .map(Base64.getDecoder()::decode)
+                .collect(toList());
+
+        int minLength = ciphertexts
+                .stream()
+                .mapToInt(c -> c.length)
+                .min().getAsInt();
+
+        byte[] trimmedAndJoinedCiphertext = ciphertexts
+                .stream()
+                .map(c -> Arrays.copyOf(c, minLength))
+                .reduce(new byte[0], Bytes::append);
+
+        String key = XorCipherTest.findKeyOfSize(minLength, trimmedAndJoinedCiphertext);
+        System.out.println(XorCipher.decrypt(trimmedAndJoinedCiphertext, key));
+    }
+
+    private static Path getPathFrorResource(String filename) {
+        URL url = ClassLoader.getSystemResource(filename);
+        return Path.of(urlToUri(url));
+    }
+
+    private static URI urlToUri(URL url) {
+        try {
+            return url.toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
 }
