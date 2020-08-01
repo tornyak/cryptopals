@@ -1,7 +1,10 @@
 package com.tornyak.cryptopals.basics;
 
+import org.apache.commons.lang3.CharUtils;
+
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.function.IntPredicate;
 
 public final class Bytes {
 
@@ -75,4 +78,23 @@ public final class Bytes {
         return result;
     }
 
+    public static boolean isAsciiPrintable(byte[] s) {
+        for (int i = 0; i < s.length; i++) {
+            char c = (char) s[i];
+            if (!CharUtils.isAsciiPrintable(c) && c != CharUtils.CR && c != CharUtils.LF) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static double getAsciiLetterPercentage(byte[] bytes) {
+        int cnt = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            if (CharUtils.isAsciiAlpha((char) bytes[i])) {
+                cnt++;
+            }
+        }
+        return 100.0 * cnt / bytes.length;
+    }
 }

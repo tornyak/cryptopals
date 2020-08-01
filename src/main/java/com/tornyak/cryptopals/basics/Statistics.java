@@ -1,18 +1,11 @@
 package com.tornyak.cryptopals.basics;
 
 import org.apache.commons.lang3.CharUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.*;
 
-import static java.util.function.Predicate.*;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.*;
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
 
 public class Statistics {
 
@@ -47,7 +40,8 @@ public class Statistics {
         ENGLISH_CHAR_FREQUENCY.put('z', 0.077);
     }
 
-    private Statistics(){}
+    private Statistics() {
+    }
 
     /**
      * Method will calculate frequencies for characters in the string and calculate standard deviation
@@ -69,11 +63,11 @@ public class Statistics {
     }
 
     private static double frequencyDiff(char c, double freq) {
-        if(Character.isSpaceChar(c)) {
+        if (Character.isSpaceChar(c)) {
             return 0;
         }
-        if(!CharUtils.isAsciiPrintable(c)) {
-            return 100 * freq;
+        if (!CharUtils.isAsciiPrintable(c)) {
+            return 1000 * freq;
         }
         double englishFreq = ENGLISH_CHAR_FREQUENCY.getOrDefault(c, 0.0);
         return Math.abs(englishFreq - freq);
@@ -99,7 +93,7 @@ public class Statistics {
     }
 
     public static double sumOfLetterFrequencySquares(String s) {
-        final String alphaString = s.chars()
+        String alphaString = s.chars()
                 .filter(Character::isAlphabetic)
                 .mapToObj(Character::toString)
                 .collect(joining());
@@ -107,7 +101,7 @@ public class Statistics {
         return charHistogram(alphaString)
                 .values()
                 .stream()
-                .mapToDouble(c -> Math.pow((double)c/s.length(), 2))
+                .mapToDouble(c -> Math.pow((double) c / s.length(), 2))
                 .sum();
     }
 
@@ -127,7 +121,7 @@ public class Statistics {
 
     public static int hummingDistance(String s1, String s2) {
         Objects.requireNonNull(s1, s2);
-        if(s1.length() != s2.length()) {
+        if (s1.length() != s2.length()) {
             throw new IllegalArgumentException("length of s1 and s2 must be equal");
         }
 

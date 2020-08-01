@@ -9,9 +9,20 @@ public class XorCipher {
 
     public static String encrypt(String hexPlaintext, byte key) {
         final byte[] plaintextBytes = Hex.stringToBytes(hexPlaintext);
+        final byte[] ciphertext = xor(plaintextBytes, key);
+        return Hex.stringFromBytes(ciphertext);
+    }
+
+    public static String encrypt(String plaintext, String key) {
+        final byte[] plaintextBytes = plaintext.getBytes();
+        final byte[] keyBytes = key.getBytes();
         final byte[] ciphertext = new byte[plaintextBytes.length];
-        for (int i = 0; i < ciphertext.length; i++) {
-            ciphertext[i] = (byte)(plaintextBytes[i] ^ key);
+
+        for (int i = 0, j = 0; i < ciphertext.length; i++, j++) {
+            if (j >= keyBytes.length) {
+                j = 0;
+            }
+            ciphertext[i] = (byte) (plaintextBytes[i] ^ keyBytes[j]);
         }
         return Hex.stringFromBytes(ciphertext);
     }
@@ -40,22 +51,20 @@ public class XorCipher {
         return plaintextBytes;
     }
 
-    public static String encrypt(String plaintext, String key) {
-        final byte[] plaintextBytes = plaintext.getBytes();
-        final byte[] keyBytes = key.getBytes();
-        final byte[] ciphertext = new byte[plaintextBytes.length];
-
-        for (int i = 0, j = 0; i < ciphertext.length; i++, j++) {
-            if (j >= keyBytes.length) {
-                j = 0;
-            }
-            ciphertext[i] = (byte) (plaintextBytes[i] ^ keyBytes[j]);
-        }
-        return Hex.stringFromBytes(ciphertext);
-    }
-
     public static String decrypt(String ciphertext, byte key) {
         return encrypt(ciphertext, key);
+    }
+
+    public static byte[] decrypt(byte[] ciphertext, byte key) {
+        return xor(ciphertext, key);
+    }
+
+    private static byte[] xor(byte[] bytes, byte key) {
+        final byte[] result = new byte[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            result[i] = (byte)(bytes[i] ^ key);
+        }
+        return result;
     }
 
     public static byte[] decryptTillCommonLength(byte[] ciphertext, byte[] key) {

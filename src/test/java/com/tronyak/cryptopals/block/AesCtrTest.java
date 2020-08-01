@@ -12,7 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,8 +22,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AesCtrTest {
 
@@ -35,7 +33,7 @@ class AesCtrTest {
     static void setUp() throws Exception {
         Path[] paths = List.of("ngrams1.txt", "ngrams2.txt", "ngrams3.txt")
                 .stream()
-                .map(AesCtrTest::getPathFrorResource)
+                .map(AesCtrTest::getPathForResource)
                 .toArray(Path[]::new);
 
         nGrams = NGrams.loadFromFiles(paths);
@@ -79,7 +77,7 @@ class AesCtrTest {
     @Test
     @DisplayName("Set 3 challenge 19 - Break fixed-nonce CTR mode using substitutions")
     void breakFixedNonceUsingSubstitutions() throws IOException {
-        Path path = getPathFrorResource("challenge19_data.txt");
+        Path path = getPathForResource("challenge19_data.txt");
         final List<String> base64Plaintexts = Files.readAllLines(path);
         byte[] key = Bytes.random(blockSize);
         byte[] iv = new byte[blockSize];
@@ -192,7 +190,7 @@ class AesCtrTest {
     @Test
     @DisplayName("Set 3 challenge 20 - Break fixed-nonce CTR statistically")
     void breakFixedNonceStatistically() throws Exception {
-        Path path = getPathFrorResource("challenge20_data.txt");
+        Path path = getPathForResource("challenge20_data.txt");
 
         List<byte[]> ciphertexts = Files.readAllLines(path)
                 .stream()
@@ -209,11 +207,12 @@ class AesCtrTest {
                 .map(c -> Arrays.copyOf(c, minLength))
                 .reduce(new byte[0], Bytes::append);
 
-        String key = XorCipherTest.findKeyOfSize(minLength, trimmedAndJoinedCiphertext);
-        System.out.println(XorCipher.decrypt(trimmedAndJoinedCiphertext, key));
+        String key = XorCipherTest.findKeyOfSize(minLength, trimmedAndJoinedCiphertext, 0.95);
+        String plaintext = XorCipher.decrypt(trimmedAndJoinedCiphertext, key);
+        assertTrue(plaintext.startsWith("I'm rated \"R\"...this is a warning, ya better void"));
     }
 
-    private static Path getPathFrorResource(String filename) {
+    private static Path getPathForResource(String filename) {
         URL url = ClassLoader.getSystemResource(filename);
         return Path.of(urlToUri(url));
     }
