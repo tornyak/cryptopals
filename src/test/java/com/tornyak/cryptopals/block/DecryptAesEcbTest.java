@@ -1,4 +1,4 @@
-package com.tronyak.cryptopals.block;
+package com.tornyak.cryptopals.block;
 
 import com.tornyak.cryptopals.basics.Hex;
 import org.junit.jupiter.api.DisplayName;

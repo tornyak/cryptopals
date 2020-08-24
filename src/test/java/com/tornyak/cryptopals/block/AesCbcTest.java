@@ -1,4 +1,4 @@
-package com.tronyak.cryptopals.block;
+package com.tornyak.cryptopals.block;
 
 import com.tornyak.cryptopals.basics.Bytes;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

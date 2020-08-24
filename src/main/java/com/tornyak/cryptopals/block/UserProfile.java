@@ -1,4 +1,4 @@
-package com.tronyak.cryptopals.block;
+package com.tornyak.cryptopals.block;
 
 import java.util.HashMap;
 import java.util.Map;

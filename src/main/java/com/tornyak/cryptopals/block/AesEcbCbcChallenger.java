@@ -1,4 +1,4 @@
-package com.tronyak.cryptopals.block;
+package com.tornyak.cryptopals.block;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;

@@ -1,13 +1,12 @@
-package com.tronyak.cryptopals.block;
+package com.tornyak.cryptopals.block;
 
-import com.tornyak.cryptopals.basics.Hex;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import javax.sound.midi.Soundbank;
 import java.security.SecureRandom;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserProfileTest {
 

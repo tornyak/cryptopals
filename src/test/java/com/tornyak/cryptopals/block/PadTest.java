@@ -1,4 +1,4 @@
-package com.tronyak.cryptopals.block;
+package com.tornyak.cryptopals.block;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
