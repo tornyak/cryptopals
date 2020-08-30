@@ -105,4 +105,19 @@ class MersenneTwisterRngTest {
                 Arguments.of(0xfedcfedc)
         );
     }
+
+    @Test
+    @DisplayName("Set 3 Challenge 23 - Clone an MT19937 RNG from its output")
+    void cloneMtRngFromItsOuptut() {
+        int[] state = new int[624];
+        MersenneTwisterRng mtRng = new MersenneTwisterRng(0);
+        for (int i = 0; i < state.length; i++) {
+            state[i] = MersenneTwisterRng.untemper((int)mtRng.nextInt32());
+        }
+
+        MersenneTwisterRng mtRngClone = new MersenneTwisterRng(state);
+        for (int i = 0; i < 1000; i++) {
+            assertEquals(mtRng.nextInt32(), mtRngClone.nextInt32());
+        }
+    }
 }

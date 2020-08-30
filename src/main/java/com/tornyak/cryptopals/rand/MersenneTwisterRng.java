@@ -20,6 +20,14 @@ public class MersenneTwisterRng {
         }
     }
 
+    public MersenneTwisterRng(int[] state) {
+        if(state.length != N) {
+            throw new IllegalArgumentException("state length must be: " + N);
+        }
+        System.arraycopy(state, 0, mt, 0, N);
+        mti = N;
+    }
+
     /* generates a random number on [0,0xffffffff]-interval */
     public long nextInt32() {
         int y;
@@ -57,7 +65,7 @@ public class MersenneTwisterRng {
         return y;
     }
 
-    public static long untemper(int x) {
+    public static int untemper(int x) {
         return untemper1(untemper2(untemper3(untemper4(x))));
     }
 
@@ -77,7 +85,7 @@ public class MersenneTwisterRng {
         return x;
     }
 
-    public static int untemper1(int x) {
+    private static int untemper1(int x) {
         x ^= (x >>> 11) & 0x1ffc00;
         return x ^ ((0x7FF<<10) & x) >>> 11;
     }
