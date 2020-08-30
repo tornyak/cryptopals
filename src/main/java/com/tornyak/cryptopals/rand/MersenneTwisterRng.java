@@ -45,12 +45,40 @@ public class MersenneTwisterRng {
 
         y = mt[mti++];
 
-        /* Tempering */
+        y = temper(y);
+        return ((long) y) & 0xFFFFFFFFL;
+    }
+
+    public static int temper(int y) {
         y ^= (y >>> 11);
         y ^= (y << 7) & 0x9d2c5680;
         y ^= (y << 15) & 0xefc60000;
         y ^= (y >>> 18);
+        return y;
+    }
 
-        return ((long) y) & 0xFFFFFFFFL;
+    public static long untemper(int x) {
+        return untemper1(untemper2(untemper3(untemper4(x))));
+    }
+
+    private static int untemper4(int x) {
+        return x ^ (x >>> 18);
+    }
+
+    private static int untemper3(int x) {
+        return x ^ ((x & 0x1df8c) << 15);
+    }
+
+    private static int untemper2(int x) {
+        int[] masks = {0x2d, 0x31, 0x69, 0x9};
+        for (int i = 0; i < 4; i++) {
+            x ^= ((x >>> 7 * i) & masks[i]) << (7 * (i + 1));
+        }
+        return x;
+    }
+
+    public static int untemper1(int x) {
+        x ^= (x >>> 11) & 0x1ffc00;
+        return x ^ ((0x7FF<<10) & x) >>> 11;
     }
 }

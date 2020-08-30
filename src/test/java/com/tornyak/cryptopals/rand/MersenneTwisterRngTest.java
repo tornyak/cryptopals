@@ -2,9 +2,13 @@ package com.tornyak.cryptopals.rand;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Duration;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,5 +73,36 @@ class MersenneTwisterRngTest {
         Duration duration = Duration.ofSeconds(40 + rng.nextInt(960));
         System.out.println("Sleeping: " + duration);
         Thread.sleep(duration.toMillis());
+    }
+
+    @ParameterizedTest
+    @MethodSource("untemperArguments")
+    void untemper(int x) {
+        assertEquals(x, MersenneTwisterRng.untemper(MersenneTwisterRng.temper(x)));
+    }
+
+    static Stream<Arguments> untemperArguments() {
+        return Stream.of(
+                Arguments.of(0),
+                Arguments.of(0xf),
+                Arguments.of(0xff),
+                Arguments.of(0xfff),
+                Arguments.of(0xffff),
+                Arguments.of(0xfffff),
+                Arguments.of(0xffffff),
+                Arguments.of(0xfffffff),
+                Arguments.of(0xffffffff),
+                Arguments.of(0xa),
+                Arguments.of(0xba),
+                Arguments.of(0xcba),
+                Arguments.of(0xdcba),
+                Arguments.of(0xedcba),
+                Arguments.of(0xfedcba),
+                Arguments.of(0xbfedcba),
+                Arguments.of(0xabfedcba),
+                Arguments.of(0xaaaaaaaa),
+                Arguments.of(0xfedcba98),
+                Arguments.of(0xfedcfedc)
+        );
     }
 }
